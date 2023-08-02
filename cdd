@@ -1,0 +1,14 @@
+#!/bin/bash
+
+a=$("./target/release/supercd" "$@")
+
+if [[ $a == "@"* ]] ;
+then
+	cd "${a:2}" || exit 1
+else
+	IFS=';' read -ra lines <<< "$a"
+	for i in "${lines[@]}"
+	do
+		echo "$i"
+	done
+fi
