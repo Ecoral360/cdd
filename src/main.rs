@@ -122,8 +122,13 @@ fn main() {
         );
         print!("");
     } else if content.into.is_some() {
-        let dir = load_cd(content.into.unwrap()).unwrap();
-        print!("@ {}", dir);
+        let content = content.into.unwrap();
+        if let Some((dir, rest)) = content.split_once("/") {
+            print!("@ {}/{}", load_cd(dir.to_owned()).unwrap(), rest.to_owned());
+        } else {
+            let dir = load_cd(content).unwrap();
+            print!("@ {}", dir);
+        }
     } else if let Some(removed) = content.remove {
         let mut lines = get_all();
         let removed = removed + "=";
