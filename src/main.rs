@@ -116,8 +116,12 @@ fn main() {
     let content = Cli::parse();
 
     if content.save.is_some() {
+        let content = content.save.unwrap();
+        if content.contains("/") {
+            panic!("cdd aliases cannot contain the '/' character (tried to save {content})")
+        }
         save_cd(
-            content.save.unwrap(),
+            content,
             Some(current_dir().unwrap().to_str().unwrap().to_owned()),
         );
         print!("");
