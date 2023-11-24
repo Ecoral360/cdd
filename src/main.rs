@@ -20,6 +20,9 @@ struct Cli {
     #[arg(short, long, group = "action")]
     list: bool,
 
+    #[arg(short = 'e', long, group = "action")]
+    exists: bool,
+
     dir: Option<String>,
 }
 
@@ -70,6 +73,17 @@ fn get_all() -> Vec<String> {
         .split('\n')
         .map(ToString::to_string)
         .collect::<Vec<String>>()
+}
+
+fn get_name(path: &String) -> Result<String, String> {
+    let path = format!("={}", path);
+    let lines = read_to_string(FILE_PATH.as_str()).map_err(|err| err.to_string())?;
+    Ok(lines
+        .split('\n')
+        .find(|line| line.ends_with(&path))
+        .ok_or_else(|| "Doesn't exists")?
+        .replace(&path, "")
+        .to_owned())
 }
 
 #[derive(Clone)]
@@ -151,6 +165,9 @@ fn main() {
         get_all()
             .into_iter()
             .for_each(|line| print!("{};", line.replace("=", " = ")))
+    } else if content.exists {
+        let path = current_dir().unwrap().to_str().unwrap().to_owned();
+        print!("{}: {}", get_name(&path).unwrap(), &path)
     } else {
         print!("@ {}", content.dir.unwrap());
     }
